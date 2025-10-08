@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { AdminAPI, Vendor } from "@/lib/auth";
 import { useToast } from "@/contexts/ToastContext";
@@ -31,8 +31,8 @@ export default function VendorsPage() {
   const { showSuccess, showError } = useToast();
 
   // Helper function to check if error is due to authentication issues
-  const isAuthError = (error: any): boolean => {
-    const errorMessage = error?.message || "";
+  const isAuthError = useCallback((error: unknown): boolean => {
+    const errorMessage = (error as Error)?.message || "";
     return (
       errorMessage.includes("401") ||
       errorMessage.includes("403") ||
@@ -45,16 +45,16 @@ export default function VendorsPage() {
       errorMessage.includes("JWT") ||
       errorMessage.includes("Bearer")
     );
-  };
+  }, []);
 
   // Helper function to handle authentication errors
-  const handleAuthError = () => {
+  const handleAuthError = useCallback(() => {
     console.log("Authentication error detected, redirecting to login");
     logout(); // Clear tokens and user state
     router.push("/auth"); // Redirect to login page
-  };
+  }, [logout, router]);
 
-  const fetchVendors = async () => {
+  const fetchVendors = useCallback(async () => {
     try {
       setIsLoading(true);
       console.log("Fetching vendors with filters:", filters);
@@ -92,12 +92,12 @@ export default function VendorsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filters, isAuthError, handleAuthError, showError]);
 
   useEffect(() => {
     console.log("useEffect triggered, calling fetchVendors");
     fetchVendors();
-  }, [filters]);
+  }, [fetchVendors]);
 
   const handleVendorAction = async (
     vendorId: string,

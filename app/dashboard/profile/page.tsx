@@ -7,7 +7,6 @@ import { useToast } from "@/contexts/ToastContext";
 
 export default function ProfilePage() {
   const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { showSuccess, showError } = useToast();
   const [profileForm, setProfileForm] = useState({

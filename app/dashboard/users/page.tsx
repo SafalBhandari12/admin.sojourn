@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AdminAPI, UserWithProfiles } from "@/lib/auth";
 import { useToast } from "@/contexts/ToastContext";
 
@@ -43,7 +43,7 @@ export default function UsersPage() {
     "MANAGE_REPORTS",
   ];
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await AdminAPI.getUsers(filters);
@@ -55,11 +55,11 @@ export default function UsersPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filters, showError]);
 
   useEffect(() => {
     fetchUsers();
-  }, [filters]);
+  }, [fetchUsers]);
 
   const handleAssignAdmin = async () => {
     if (!selectedUser) return;

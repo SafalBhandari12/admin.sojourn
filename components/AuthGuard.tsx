@@ -50,7 +50,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
       //   router.push("/auth");
       // }
     }
-  }, [isLoading, isAuthenticated, router, checkTokenExpiration]);
+  }, [isLoading, isAuthenticated, router, checkTokenExpiration, user]);
 
   if (isLoading) {
     return (

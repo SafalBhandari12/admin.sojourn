@@ -179,7 +179,7 @@ export class AdminAPI {
   }
 
   // Helper method to handle API responses with consistent error handling
-  private static async handleApiResponse(response: Response): Promise<any> {
+  private static async handleApiResponse<T>(response: Response): Promise<T> {
     console.log("API Response status:", response.status);
     console.log("API Response ok:", response.ok);
 
@@ -203,7 +203,7 @@ export class AdminAPI {
       );
     }
 
-    return response.json();
+    return response.json() as Promise<T>;
   }
 
   // Vendor Management
@@ -228,7 +228,7 @@ export class AdminAPI {
       headers: this.getAuthHeaders(),
     });
 
-    return this.handleApiResponse(response);
+    return this.handleApiResponse<PaginatedResponse<Vendor>>(response);
   }
 
   static async approveVendor(vendorId: string): Promise<ApiResponse<Vendor>> {
@@ -240,7 +240,7 @@ export class AdminAPI {
       }
     );
 
-    return this.handleApiResponse(response);
+    return this.handleApiResponse<ApiResponse<Vendor>>(response);
   }
 
   static async rejectVendor(vendorId: string): Promise<ApiResponse<Vendor>> {
@@ -252,7 +252,7 @@ export class AdminAPI {
       }
     );
 
-    return this.handleApiResponse(response);
+    return this.handleApiResponse<ApiResponse<Vendor>>(response);
   }
 
   static async suspendVendor(vendorId: string): Promise<ApiResponse<Vendor>> {
@@ -264,7 +264,7 @@ export class AdminAPI {
       }
     );
 
-    return this.handleApiResponse(response);
+    return this.handleApiResponse<ApiResponse<Vendor>>(response);
   }
 
   // User Management
@@ -288,11 +288,9 @@ export class AdminAPI {
       }
     );
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch users: ${response.statusText}`);
-    }
-
-    return response.json();
+    return this.handleApiResponse<PaginatedResponse<UserWithProfiles>>(
+      response
+    );
   }
 
   static async assignAdminRole(
@@ -314,11 +312,9 @@ export class AdminAPI {
       }
     );
 
-    if (!response.ok) {
-      throw new Error(`Failed to assign admin role: ${response.statusText}`);
-    }
-
-    return response.json();
+    return this.handleApiResponse<
+      ApiResponse<{ user: UserWithProfiles; adminProfile: AdminProfile }>
+    >(response);
   }
 
   static async revokeAdminRole(
@@ -332,11 +328,7 @@ export class AdminAPI {
       }
     );
 
-    if (!response.ok) {
-      throw new Error(`Failed to revoke admin role: ${response.statusText}`);
-    }
-
-    return response.json();
+    return this.handleApiResponse<ApiResponse<UserWithProfiles>>(response);
   }
 
   static async toggleUserStatus(
@@ -352,11 +344,7 @@ export class AdminAPI {
       }
     );
 
-    if (!response.ok) {
-      throw new Error(`Failed to toggle user status: ${response.statusText}`);
-    }
-
-    return response.json();
+    return this.handleApiResponse<ApiResponse<UserWithProfiles>>(response);
   }
 
   // Admin Profile Management
@@ -371,11 +359,7 @@ export class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to update admin profile: ${response.statusText}`);
-    }
-
-    return response.json();
+    return this.handleApiResponse<ApiResponse<AdminProfile>>(response);
   }
 }
 
